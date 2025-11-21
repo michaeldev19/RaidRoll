@@ -13,7 +13,7 @@ RaidRoll is an improved World of Warcraft addon designed to facilitate raid loot
 
 - **Revamped Configuration UI:** The settings panel has been fully rebuilt using the Ace3.0 library for a more intuitive experience. This provides a smoother and more intuitive experience for managing: General Options, Priority Loot, and Loot Window tracking.
 - **Minor Bugfixes:** Several minor bugs have been addressed and corrected for better overall stability and performance.
--- **Full Spanish Translation:** The addon now includes a complete translation to Spanish, making it more accessible to Spanish-speaking users.
+- **Full Spanish Translation:** The addon now includes a complete translation to Spanish, making it more accessible to Spanish-speaking users.
 
 ## Slash Commands
 
