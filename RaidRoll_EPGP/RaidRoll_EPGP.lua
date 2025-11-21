@@ -111,7 +111,7 @@ function RR_ReallyGetEPGPCharacterData(character)
 					
 				-- Search for the Main character
 					if tonumber(EP) == nil and tonumber(GP) == nil then
-						if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Enable_Alt_Mode"] == true then
+						if RaidRoll.db.profile.RR_RollCheckBox_Enable_Alt_Mode == true then
 							SetGuildRosterShowOffline(true);
 							
 							character = officernote

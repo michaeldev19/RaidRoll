@@ -1,12 +1,10 @@
 ## Interface: 30300
 ## X-Compatible-With: 40000
-## Title: Raid Roll - Loot Tracker - [|cffb1997fUltimoWoW|r]
-## Author: Musou
-## Notes: Shows a window containing boss loots. Also has customizable messages for distributing loot. (~50 k B)
-## email: killerpet@gmail.com
+## Title: Raid Roll - Loot Tracker
+## Author: Musou (Modified by Shinji)
+## Notes: Shows a window containing boss loots. Also has customizable messages for distributing loot.
+## Version: 4.4.15
+## X-Website: https://github.com/michaeldev19
 ## Dependencies: RaidRoll
 
-
 RaidRoll_LootTracker.lua
-
-

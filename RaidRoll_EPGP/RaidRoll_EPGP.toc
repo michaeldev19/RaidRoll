@@ -1,12 +1,10 @@
 ## Interface: 30300
 ## X-Compatible-With: 40000
-## Title: Raid Roll - EPGP - [|cffb1997fUltimoWoW|r]
-## Author: Musou
+## Title: Raid Roll - EPGP
+## Author: Musou (Modified by Shinji)
 ## Notes: Used to track EPGP
-## email: killerpet@gmail.com
+## Version: 4.4.15
+## X-Website: https://github.com/michaeldev19
 ## Dependencies: RaidRoll
 
-
 RaidRoll_EPGP.lua
-
-

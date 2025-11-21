@@ -21,34 +21,23 @@ end
 -- Setuo extra frame commands
 function RR_ExtraFrame_Options()
 
+	if RaidRoll_LootTrackerLoaded~=true then
+	-- FRAME NOT LOADED MESSAGE
+		
+		RR_LOOT_FRAME_msg = RR_LOOT_FRAME:CreateFontString("RR_LOOT_FRAME_msg" ,"ARTWORK","GameFontNormal");
+		--RR_LOOT_FRAME_msg:SetAllPoints();
+		RR_LOOT_FRAME_msg:SetJustifyH("center")
+		RR_LOOT_FRAME_msg:SetPoint("center",RR_LOOT_FRAME,"center",0, 0);
+		
+		RR_LOOT_FRAME_msg:SetText("Loot Frame Not Loaded")
+	end
 
- if RaidRoll_LootTrackerLoaded~=true then
--- FRAME NOT LOADED MESSAGE
+	RR_RollFrame:SetScript("OnShow", function()
+										RR_GetEPGPGuildData()
+										RR_RollFrame_SortOutSize()
+									end)
 	
-	RR_LOOT_FRAME_msg = RR_LOOT_FRAME:CreateFontString("RR_LOOT_FRAME_msg" ,"ARTWORK","GameFontNormal");
-	--RR_LOOT_FRAME_msg:SetAllPoints();
-	RR_LOOT_FRAME_msg:SetJustifyH("center")
-	RR_LOOT_FRAME_msg:SetPoint("center",RR_LOOT_FRAME,"center",0, 0);
-	
-	RR_LOOT_FRAME_msg:SetText("Loot Frame Not Loaded")
- end
-
-
-
-
-
-
- RR_RollFrame:SetScript("OnShow", function()
-									RR_GuildRankUpdate()
-									RR_GetEPGPGuildData()
-									
-									RR_RollFrame_SortOutSize()
-									
-									--RaidRoll_AnnounceWinnerButton
-									--RR_Roll_5SecAndAnnounce
-								end)
-
-  if RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] = 0 end
+if RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] = 0 end
 
 
 	Raid_Roll_Name=CreateFrame("FRAME","Raid_Roll_Name",RR_RollFrame);
@@ -60,7 +49,7 @@ function RR_ExtraFrame_Options()
 	Raid_Roll_Name_String:SetAllPoints();
 	Raid_Roll_Name_String:SetJustifyH("LEFT")
 	
-	Raid_Roll_Name_String:SetText("Musou's Raid Roller")
+	Raid_Roll_Name_String:SetText(RAIDROLL_LOCALE["Title_Raid_roller"])
 
 
 --------------------------------------------------------------
@@ -286,13 +275,14 @@ function RR_ExtraFrame_Options()
 															
 															SendChatMessage(Winner_Message, rr_AnnounceType)
 															
-															if RR_RollCheckBox_GuildAnnounce:GetChecked() then
-																if RR_RollCheckBox_GuildAnnounce_Officer:GetChecked() then
+															if RaidRoll.db.profile.RR_RollCheckBox_GuildAnnounce == true then
+																if RaidRoll.db.profile.RR_RollCheckBox_GuildAnnounce_Officer == true then
 																	SendChatMessage(Winner_Message, "OFFICER")
 																else
 																	SendChatMessage(Winner_Message, "GUILD")
 																end
 															end
+															
 														end)
 	RaidRoll_AnnounceWinnerButton:SetScript("OnEnter",function(self) RR_MouseOverTooltip(self:GetName())	end)
 	RaidRoll_AnnounceWinnerButton:SetScript("OnLeave", function() GameTooltip:Hide()	end)
@@ -371,7 +361,7 @@ function RR_ExtraFrame_Options()
 	RR_RollCheckBox_RankPrio:SetWidth(20)
 	RR_RollCheckBox_RankPrio:SetHeight(20)
 	RR_RollCheckBox_RankPrio:SetPoint("BottomLeft", RR_BottomFrame, "BottomLeft", 10, 10)
-	_G["RaidRollCheckBox_RankPrio".."Text"]:SetText(RAIDROLL_LOCALE["Give_Higher_Ranks_Priority"])
+	_G["RaidRollCheckBox_RankPrio".."Text"]:SetText(RAIDROLL_LOCALE["Option_PriorityHigherRanks"])
 	RR_RollCheckBox_RankPrio:SetScript("OnClick",RaidRoll_CheckButton_Update)
 ]]--
 	
@@ -555,123 +545,94 @@ end)
 	
 end
 
-
 -- sets up the name frame
 function RR_SetupNameFrame()
 
-RR_NAME_FRAME = CreateFrame("Frame",nil,RR_RollFrame)
+	RR_NAME_FRAME = CreateFrame("Frame",nil,RR_RollFrame)
 
-local backdrop = {
-  --bgFile="Interface\DialogFrame\UI-DialogBox-Background",  -- path to the background texture
-  --edgeFile="Interface\DialogFrame\UI-DialogBox-Border",  -- path to the border texture
-  
-  bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",  -- path to the background texture
-  edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",  -- path to the border texture
+	local backdrop = {
+		--bgFile="Interface\DialogFrame\UI-DialogBox-Background",  -- path to the background texture
+		--edgeFile="Interface\DialogFrame\UI-DialogBox-Border",  -- path to the border texture
+		bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",  -- path to the background texture
+		edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",  -- path to the border texture
+		tile = true,    -- true to repeat the background texture to fill the frame, false to scale it
+		tileSize = 32,  -- size (width or height) of the square repeating background tiles (in pixels)
+		edgeSize = 20,  -- thickness of edge segments and square size of edge corners (in pixels)
+		insets = {
+			-- distance from the edges of the frame to those of the background texture (in pixels)
+			left = 2,
+			right = 2,
+			top = 2,
+			bottom = 2
+		}
+	}
 
-  
-  tile = true,    -- true to repeat the background texture to fill the frame, false to scale it
-  tileSize = 32,  -- size (width or height) of the square repeating background tiles (in pixels)
-  edgeSize = 20,  -- thickness of edge segments and square size of edge corners (in pixels)
-  insets = {    -- distance from the edges of the frame to those of the background texture (in pixels)
-    left = 2,
-    right = 2,
-    top = 2,
-    bottom = 2
-  }
-}
+	RR_NAME_FRAME:SetBackdrop(backdrop)
+	RR_Itemname:SetParent(RR_NAME_FRAME)
+	RR_NAME_FRAME:SetFrameStrata("MEDIUM")
+	--RR_NAME_FRAME:SetWidth(128) -- Set these to whatever height/width is needed 
+	--RR_NAME_FRAME:SetWidth(128) -- Set these to whatever height/width is needed 
+	RR_NAME_FRAME:SetHeight(30) -- for your Texture
+	RR_NAME_FRAME:SetWidth(_G["RR_Itemname"]:GetWidth() + 20)
+	RR_NAME_FRAME:SetPoint("BOTTOM", "RR_RollFrame", "TOP", 0, -6);
 
-RR_NAME_FRAME:SetBackdrop(backdrop)
+	--RR_NAME_FRAME:Hide()
 
+	RR_NAME_FRAME:SetMovable(true)
+	RR_NAME_FRAME:EnableMouse(true)
+	RR_NAME_FRAME:SetScript("OnMouseDown",function()
+		RR_RollFrame:StartMoving()
+	end)
+	RR_NAME_FRAME:SetScript("OnMouseUp",function()
+		RR_RollFrame:StopMovingOrSizing()
+	end)
 
+		RR_UpdateNAME_FRAME = CreateFrame("Frame",nil,RR_RollFrame)
+		
+		RR_NAME_FRAME:SetScript("OnEnter", function(self) 
+			RR_MouseOverName = self:GetName()
+			RR_UpdateNAME_FRAME:SetScript("OnUpdate", function() 
+				RR_MouseOver_NameFrame()
+			end)
+		end)
 
-RR_Itemname:SetParent(RR_NAME_FRAME)
-RR_NAME_FRAME:SetFrameStrata("MEDIUM")
---RR_NAME_FRAME:SetWidth(128) -- Set these to whatever height/width is needed 
---RR_NAME_FRAME:SetWidth(128) -- Set these to whatever height/width is needed 
-RR_NAME_FRAME:SetHeight(30) -- for your Texture
-
-RR_NAME_FRAME:SetWidth(_G["RR_Itemname"]:GetWidth() + 20)
-	
-
-RR_NAME_FRAME:SetPoint("BOTTOM", "RR_RollFrame", "TOP", 0, -6);
-
---RR_NAME_FRAME:Hide()
-
-RR_NAME_FRAME:SetMovable(true)
-RR_NAME_FRAME:EnableMouse(true)
-RR_NAME_FRAME:SetScript("OnMouseDown",function()
-  RR_RollFrame:StartMoving()
-end)
-RR_NAME_FRAME:SetScript("OnMouseUp",function()
-  RR_RollFrame:StopMovingOrSizing()
-end)
-
-	RR_UpdateNAME_FRAME = CreateFrame("Frame",nil,RR_RollFrame)
-	
-	RR_NAME_FRAME:SetScript("OnEnter", function(self) 
-									RR_MouseOverName = self:GetName()
-									RR_UpdateNAME_FRAME:SetScript("OnUpdate", 	function() 
-																			RR_MouseOver_NameFrame()
-																		end)
-									end)
-
-
-
-	RR_NAME_FRAME:SetScript("OnLeave", function() 
-										GameTooltip:Hide();	
-										RR_UpdateNAME_FRAME:SetScript("OnUpdate", 	function() 
-																				-- Dont do anything
-																			end)
-									end)
-	
-	
-
-
-RR_Itemname:SetPoint("TOPLEFT",RR_NAME_FRAME,"TOPLEFT",11,-8)
+		RR_NAME_FRAME:SetScript("OnLeave", function() 
+			GameTooltip:Hide();	
+			RR_UpdateNAME_FRAME:SetScript("OnUpdate", function() 
+				-- Dont do anything
+			end)
+		end)
+		
+	RR_Itemname:SetPoint("TOPLEFT",RR_NAME_FRAME,"TOPLEFT",11,-8)
 
 end
 
 function RR_MouseOver_NameFrame()
-
-	if RaidRoll_DB["debug"] == true then RR_Test("Moused over " .. rr_Item[rr_CurrentRollID]) end
-
 	GameTooltip_SetDefaultAnchor( GameTooltip, UIParent )
 	GameTooltip:ClearAllPoints(); 
 	GameTooltip:SetPoint("bottom", RR_NAME_FRAME, "top", 0, 0)
 	GameTooltip:ClearLines()
-	
 	if string.find(rr_Item[rr_CurrentRollID], "ID ") == nil then
 		GameTooltip:SetHyperlink(rr_Item[rr_CurrentRollID])
 	end
 end 
 
 function RR_OpenOptionsPanel()
-
-InterfaceOptionsFrame_OpenToCategory(RaidRoll_Panel.panel)
-
+	InterfaceOptionsFrame_OpenToCategory("Raid Roll")
 end
 
-
-
 function RR_RollWindowSizeUpdated()
-
-local height = RR_RollFrame:GetHeight()
-local extraheight = height - 135
-
-if RaidRoll_DB["debug"] == true then RR_Test("extraheight = " .. extraheight) end
-
-
+	local height = RR_RollFrame:GetHeight()
+	local extraheight = height - 135
 end 
 
 function RR_FinishRolling(dontannounce,settime)
-if RaidRoll_DB["debug"] == true then RR_Test("---- RR_FinishRolling ----" ) end
-
+	
 	if dontannounce == true then
 		if settime ~= nil then
 			if RR_Timestamp > (time() - (59 - settime)) then
 				if settime == 10 then RR_HasAnnounced_10_Sec = true end
 				if settime == 5  then RR_HasAnnounced_5_Sec = true end
-				
 				RR_Timestamp = time() - (59 - settime)
 			end
 		end
@@ -692,8 +653,6 @@ if RaidRoll_DB["debug"] == true then RR_Test("---- RR_FinishRolling ----" ) end
 		end
 	end
 	
-	
--- Award xxxx button
 	if dontannounce ~= true then
 		
 		local Winner = RR_FindWinner(rr_CurrentRollID)
@@ -709,17 +668,13 @@ if RaidRoll_DB["debug"] == true then RR_Test("---- RR_FinishRolling ----" ) end
 			RR_Test("XX>><<>><><><><")
 		end
 		
-		
 		if Winner  ~= "" and rr_Item[rr_CurrentRollID] ~= "ID #"..rr_CurrentRollID and (time() > RR_Timestamp + 60 or rr_CurrentRollID ~= rr_rollID) then
-			if RaidRoll_DB["debug2"] == true then RR_Test("---- Awarding Loot ----" ) end
-		-- Get the number of items on the body
+
 			numLootItems = GetNumLootItems();
 			WeHaveFoundTheItem = false
 			
-			if RaidRoll_DB["debug2"] == true then RR_Test(numLootItems .. " items found.") end
-			
 			for i=1,numLootItems do
-			-- If its an item
+				
 				if LootSlotIsItem(i) then
 					if WeHaveFoundTheItem == false then
 						ItemLink1 = GetLootSlotLink(i); 
@@ -727,8 +682,6 @@ if RaidRoll_DB["debug"] == true then RR_Test("---- RR_FinishRolling ----" ) end
 						
 						local _, itemId1, _ = strsplit(":", ItemLink1,3)
 						local _, itemId2, _ = strsplit(":", ItemLink2,3)
-
-						
 						
 						if RaidRoll_DB["debug2"] == true then 
 							RR_Test("--------Item " .. i .. "-------")
@@ -738,21 +691,12 @@ if RaidRoll_DB["debug"] == true then RR_Test("---- RR_FinishRolling ----" ) end
 							RR_Test(itemId2)
 							RR_Test("--------------------")
 						end
-							
-						
-						
-						
 						
 						if itemId1 == itemId2 then
-						
-							if RaidRoll_DB["debug2"] == true then RR_Test("Item Found, it was item #" ..i) end
-							
 							WeHaveFoundTheItem = true
-							
-							
-							
 							RR_GiveLoot(Winner,i)
 						end
+
 					end
 				end
 			end
@@ -761,7 +705,9 @@ if RaidRoll_DB["debug"] == true then RR_Test("---- RR_FinishRolling ----" ) end
 				RR_Test(rr_Item[rr_CurrentRollID] .. " " .. RAIDROLL_LOCALE["item_not_found"])
 			end
 		end
+
 	end
+
 end 
 
 function RR_GiveLoot(player,slot)
@@ -777,7 +723,7 @@ function RR_GiveLoot(player,slot)
 		button1 = RAIDROLL_LOCALE["Give_to"] .. " " .. player,
 		button2 = RAIDROLL_LOCALE["Cancel"] ,
 		OnAccept = function()
-		    RR_ReallyGiveLoot(player,slot);
+			RR_ReallyGiveLoot(player,slot);
 		end,
 		timeout = 0,
 		whileDead = true,
@@ -788,9 +734,6 @@ function RR_GiveLoot(player,slot)
 end 
 
 function RR_ReallyGiveLoot(player,slot)
-
-	if RaidRoll_DB["debug2"] == true then RR_Test("Giving " .. player .. " the loot in slot " .. slot) end
-
 	FoundPlayer = false
 	
 	for i = 1, 40 do
@@ -799,9 +742,7 @@ function RR_ReallyGiveLoot(player,slot)
 			
 			if (string.lower(GetMasterLootCandidate(i)) == string.lower(player)) then
 				FoundPlayer = true
-							--    Item ID, Player ID
 				GiveMasterLoot(slot, i);
-				
 				if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Close"] == true then
 					RR_RollFrame:Hide()
 				end	
@@ -812,14 +753,8 @@ function RR_ReallyGiveLoot(player,slot)
 	if GetNumRaidMembers() == 0 then
 		for i = 1, GetNumPartyMembers()+1 do
 			if GetMasterLootCandidate(i) ~= nil then
-				if RaidRoll_DB["debug"] == true then RR_Test(i .. ": " .. GetMasterLootCandidate(i)) end
-				
 				if (string.lower(GetMasterLootCandidate(i)) == string.lower(player)) then
 					FoundPlayer = true
-					
-				--    Item ID, Player ID
-					if RaidRoll_DB["debug"] == true then RR_Test("Slot: " .. slot .. " Item: " .. i) end 
-					
 					GiveMasterLoot(slot, i);
 					if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Close"] == true then
 						RR_RollFrame:Hide()
@@ -828,17 +763,12 @@ function RR_ReallyGiveLoot(player,slot)
 			end
 		end
 	end
-	
-	if FoundPlayer == false then
-		RR_Test(player .. " could not be found or is not eligable for the loot.")
-	end
+
 end 
 
 
 function RR_DoYouWantToMarkThem(player)
-
-player = string.lower(player)
-
+	player = string.lower(player)
 
 	StaticPopupDialogs["WannaMarkThem"] = {
 		text = string.format(RAIDROLL_LOCALE["Mark_Them"],player),
@@ -847,7 +777,7 @@ player = string.lower(player)
 		button3 = RAIDROLL_LOCALE["Not_Sure"],
 		button4 = RAIDROLL_LOCALE["Possibly"],
 		OnAccept = function()
-		    RaidRoll_DBPC[UnitName("player")]["RR_NameMark"][player] = true
+			RaidRoll_DBPC[UnitName("player")]["RR_NameMark"][player] = true
 			if RR_RollFrame:IsShown() then
 				RR_Display(rr_CurrentRollID)
 			end	

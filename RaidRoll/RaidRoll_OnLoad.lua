@@ -1,35 +1,15 @@
-﻿RaidRollHasLoaded = true
+﻿
+RaidRoll = LibStub("AceAddon-3.0"):NewAddon("RaidRoll", "AceEvent-3.0", "AceConsole-3.0")
 
+--function RaidRoll_OnLoad(self)
+    -- initialize things here that do not depend on AceAddon
+--end
 
-
-function RR_LootSettings_Setup()
-
-
---[[
-	_G["LootButton2"]:SetScript("OnMouseDown",	function()
-												RR_Test("pressed")
-											end
-	)
-]]
-end
-
-
+RaidRollHasLoaded = true
 
 RR_ListOfIcons={}
 RR_NumberOfIcons = 5
-
 RR_ListOfIcons = {"","! ","(N)","(G)","(NG)"}
-
-
-
-
-
-
-
-
-
- 
-
 
 function RR_LootWindowEvent(self, event, ...)
 	local arg1, arg2, arg3, arg4, arg5, arg6 = ...;
@@ -111,7 +91,7 @@ local 	player_name,mob_name,mob_guid,numLootItems,
 		end
 		if RaidRoll_DB["debug"] == true then RR_Test("Your target is a " .. Type); end
 		
-		if Type ~= "NPC" then mob_name = "Unknown" end
+		if Type ~= "NPC" then mob_name = RAIDROLL_LOCALE["Unknown"] end
 		
 --		if RaidRoll_DB["debug"] == true then RR_Test(mob_name.." has the GUID: "..mob_guid); end
 		
@@ -472,7 +452,7 @@ function RaidRoll_OnLoad(self)
   self:RegisterEvent("CHAT_MSG_YELL")
   self:RegisterEvent("CHAT_MSG_WHISPER")
   --self:RegisterEvent("CHAT_MSG_ADDON")
-  self:RegisterEvent("GUILD_ROSTER_UPDATE"); 
+  --self:RegisterEvent("GUILD_ROSTER_UPDATE"); 
   self:RegisterEvent("ADDON_LOADED");   
   self:RegisterEvent("VARIABLES_LOADED");-- Fired when saved variables are loaded
 
@@ -636,13 +616,12 @@ function RaidRoll_Event(self, event, ...)
 		RR_SetupVariables()	
 		RR_SetupSlashCommands()
 		RR_EPGP_Setup()
-		RR_LootSettings_Setup()
 	end
 	
 	
-	if event == "GUILD_ROSTER_UPDATE" then
+--[[ 	if event == "GUILD_ROSTER_UPDATE" then
 		RR_GuildRankUpdate()
-	end
+	end ]]
 
 -- Debugging, show the events that occured and the arguments
 	if RaidRoll_DB ~= nil then
@@ -1374,7 +1353,7 @@ local temp
 					--RR_Test("i=" .. i .. " j=" .. " " .. j .. RollerRankIndex[rr_rollID][j+1] .. "/" .. RollerRankIndex[rr_rollID][j])
 					if RollerRankIndex[rr_rollID] ~= nil then
 						if RollerRankIndex[rr_rollID][j+1] ~= nil then
-							if RaidRoll_DB["Rank Priority"][RollerRankIndex[rr_rollID][j+1]+1] > RaidRoll_DB["Rank Priority"][RollerRankIndex[rr_rollID][j]+1] then
+							if RaidRoll_DB["RankPriority"][RollerRankIndex[rr_rollID][j+1]+1] > RaidRoll_DB["RankPriority"][RollerRankIndex[rr_rollID][j]+1] then
 								RaidRoll_Flip(rr_rollID,j)
 							end
 						end
@@ -1617,13 +1596,14 @@ l_RR_DisplayID = RR_DisplayID
 					
 					SendChatMessage(Winner_Message, rr_AnnounceType)
 					
-					if RR_RollCheckBox_GuildAnnounce:GetChecked() then
-						if RR_RollCheckBox_GuildAnnounce_Officer:GetChecked() then
+					if RaidRoll.db.profile.RR_RollCheckBox_GuildAnnounce == true then
+						if RaidRoll.db.profile.RR_RollCheckBox_GuildAnnounce_Officer == true then
 							SendChatMessage(Winner_Message, "OFFICER")
 						else
 							SendChatMessage(Winner_Message, "GUILD")
 						end
 					end
+					
 				end
 				RR_AnnounceCountdowns = false
 				RR_RollCountdown = false
@@ -2036,7 +2016,7 @@ cmd_s = string.lower(cmd)
 			RR_RollCheckBox_EPGPMode_panel:SetChecked(true)
 			RR_Test("EPGP Mode - |cFFABD473ENABLED")
 		end
-		RaidRoll_CheckButton_Update_Panel()
+		RaidRoll:UpdateDisplay()
 		RR_Display(rr_CurrentRollID)
 	end
 
@@ -2543,98 +2523,41 @@ end
 
 function RaidRoll_CheckButton_Update()
 
---RaidRoll_Allow_All:SetChecked(true);
 	if RaidRoll_Catch_All:GetChecked()  then
 		RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] =  true
 		RaidRoll_Catch_All:SetChecked(true)
-		RR_RollCheckBox_Unannounced_panel:SetChecked(true)
-		--RR_Test("Raid Roll: Auto-Tracking Rolls Enabled")
 	else
 		RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] =  false
 		RaidRoll_Catch_All:SetChecked(false)
-		RR_RollCheckBox_Unannounced_panel:SetChecked(false)
-		--RR_Test("Raid Roll: Auto-Tracking Rolls Disabled")
 	end
 
 	if RaidRoll_Allow_All:GetChecked()  then
 		RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] =  true
 		RaidRoll_Allow_All:SetChecked(true)
-		RR_RollCheckBox_AllRolls_panel:SetChecked(true)
-		--RR_Test("Raid Roll: All rolls accepted")
 	else
 		RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] =  false
 		RaidRoll_Allow_All:SetChecked(false)
-		RR_RollCheckBox_AllRolls_panel:SetChecked(false)
-		--RR_Test("Raid Roll: Only 1-100 rolls accepted")
 	end
 	
 	if RR_RollCheckBox_ExtraRolls:GetChecked()  then
 		RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] =  true
 		RR_RollCheckBox_ExtraRolls:SetChecked(true)
-		RR_RollCheckBox_ExtraRolls_panel:SetChecked(true)
-		--RR_Test("Raid Roll: All rolls accepted")
 	else
 		RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] =  false
 		RR_RollCheckBox_ExtraRolls:SetChecked(false)
-		RR_RollCheckBox_ExtraRolls_panel:SetChecked(false)
-		--RR_Test("Raid Roll: Only 1-100 rolls accepted")
 	end
 
---[[
-	if RR_RollCheckBox_ShowRanks:GetChecked()  then
-		RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] =  true
-		RR_RollCheckBox_ShowRanks:SetChecked(true)
-		RR_RollCheckBox_ShowRanks_panel:SetChecked(true)
-		for i=1,6 do
-			_G["Raid_Roll_Rank_String"..i-1]:Show()
-		end
-		RR_RollFrame:SetWidth(265+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"])
-		_G["RR_Rolled"]:ClearAllPoints()
-		_G["RR_Rolled"]:SetPoint("TOPLEFT", _G["RR_RollFrame"], "TOPLEFT",170+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"],-30)
-		
-		_G["RR_Group0"]:ClearAllPoints()
-		_G["RR_Group0"]:SetPoint("TOPLEFT", _G["RR_RollFrame"], "TOPLEFT",220+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"],-30)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] =  false
-		RR_RollCheckBox_ShowRanks:SetChecked(false)
-		RR_RollCheckBox_ShowRanks_panel:SetChecked(false)
-		for i=1,6 do
-			_G["Raid_Roll_Rank_String"..i-1]:Hide()
-		end
-		RR_RollFrame:SetWidth(215+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"])
-		_G["RR_Rolled"]:ClearAllPoints()
-		_G["RR_Rolled"]:SetPoint("TOPLEFT", _G["RR_RollFrame"], "TOPLEFT",120+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"],-30)
-		
-		_G["RR_Group0"]:ClearAllPoints()
-		_G["RR_Group0"]:SetPoint("TOPLEFT", _G["RR_RollFrame"], "TOPLEFT",170+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"],-30)
-		
-	end
-]]
-	
-	
-	if RR_RollCheckBox_RankPrio_panel:GetChecked()  then
-		RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] =  true
-		--RR_RollCheckBox_RankPrio:SetChecked(true)
-		RR_RollCheckBox_RankPrio_panel:SetChecked(true)
-		--RR_Test("Raid Roll: All rolls accepted")
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] =  false
-		--RR_RollCheckBox_RankPrio:SetChecked(false)
-		RR_RollCheckBox_RankPrio_panel:SetChecked(false)
-		--RR_Test("Raid Roll: Only 1-100 rolls accepted")
-	end
-	
 	rr_RollSort(rr_CurrentRollID)
 	
 	if RR_HasDisplayedAlready ~= nil then
 		RR_Display(rr_CurrentRollID)
 	end
 	
-	for i=1,5 do
-		_G["Raid_Roll_Rank_String"..i]:SetWidth(65+RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"]); 
+	for i = 1,5 do
+		_G["Raid_Roll_Rank_String"..i]:SetWidth(65 + RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"]); 
 	end
 	
-	RaidRoll_CheckButton_Update_Panel()
+	RaidRoll:UpdateDisplay()
 end
 
 
@@ -2649,279 +2572,44 @@ end
 function RR_SetupVariables()
 
 	Raid_Roll_AutoUpdate=CreateFrame("FRAME","Raid_Roll_AutoUpdate");
-	
---[[
-	if IsInGuild() then 
-		if RaidRoll_DB["debug"] == true then RR_Test("--In Guild, Auto refreshing guild info--") end
-		RR_AutoUpdate_GUILDROSTERTIME = GetTime() + 6
-		UIParent:HookScript("OnUpdate",	function() 
-											if GetTime() > RR_AutoUpdate_GUILDROSTERTIME then
-												if IsInGuild() then GuildRoster() end
-												if RaidRoll_DB["debug"] == true then RR_Test("--Auto refreshing guild info again--") end
-												RR_AutoUpdate_GUILDROSTERTIME = GetTime() + 6
-											end 
-										end)
-	end 
-]]
 
 	if RaidRoll_DB == nil then RaidRoll_DB = {} end
 	if RaidRoll_DBPC == nil then RaidRoll_DBPC = {} end
 	if RaidRoll_DBPC[UnitName("player")] == nil then RaidRoll_DBPC[UnitName("player")] = {} end
-	
-	--[[
-	if RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] == nil then RaidRoll_DBPC[UnitName("player")][""] = RR_Accept_All_Rolls end
-	if RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] = RR_Track_Unannounced_Rolls end
-	if RaidRoll_DBPC[UnitName("player")]["RR_Roll_Tracking_Enabled"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_Roll_Tracking_Enabled"] = RR_Roll_Tracking_Enabled end
-	if RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] = RR_AllowExtraRolls end
-	if RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] = RR_Show_Ranks end
-	if RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] = RR_RankPriority end
-	if RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] = RR_ExtraWidth end
-	if RaidRoll_DBPC[UnitName("player")]["RR_ShowGroupNumber"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_ShowGroupNumber"] = RR_ShowGroupNumber end
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollFrameHeight"] == nil then RaidRoll_DBPC[UnitName("player")]["RR_RollFrameHeight"] = RR_RollFrameHeight end
-	]]
 
 	RR_SetupNameFrame()
 	RR_ExtraFrame_Options()
-	Setup_RR_Panel()
 
-	if RaidRoll_LootTrackerLoaded==true then
+	if RaidRoll_LootTrackerLoaded == true then
+
 		RR_SetupLootFrame()
 		
-		
--- edit box 1
+		-- edit box 1
 		if RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg1_EditBox"] == nil then
 			RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg1_EditBox"] = "Roll [Item] Main Spec"
 		end
 		
--- edit box 2
+		-- edit box 2
 		if RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg2_EditBox"] == nil then
 			RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg2_EditBox"] = "Roll [Item] Off Spec"
 		end
 		
--- edit box 3
+		-- edit box 3
 		if RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg3_EditBox"] == nil then
 			RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg3_EditBox"] = "Roll [Item] Off Spec"
 		end
 		
-		Raid_Roll_SetMsg1_EditBox:Insert(RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg1_EditBox"])
-		Raid_Roll_SetMsg2_EditBox:Insert(RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg2_EditBox"])
-		Raid_Roll_SetMsg3_EditBox:Insert(RaidRoll_DBPC[UnitName("player")]["Raid_Roll_SetMsg3_EditBox"])
-		
--- RR_ReceiveGuildMessages
-		if RaidRoll_DBPC[UnitName("player")]["RR_ReceiveGuildMessages"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_ReceiveGuildMessages"] == false then
-			RaidRoll_DBPC[UnitName("player")]["RR_ReceiveGuildMessages"] =  false
-			RR_ReceiveGuildMessages:SetChecked(false)
-		else
-			RR_ReceiveGuildMessages:SetChecked(true)
-		end
-		
--- RR_Enable3Messages
-		if RaidRoll_DBPC[UnitName("player")]["RR_Enable3Messages"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_Enable3Messages"] == false then
-			RaidRoll_DBPC[UnitName("player")]["RR_Enable3Messages"] =  false
-			RR_Enable3Messages:SetChecked(false)
-		else
-			RR_Enable3Messages:SetChecked(true)
-		end
-		
--- RR_Frame_WotLK_Dung_Only
-		if RaidRoll_DBPC[UnitName("player")]["RR_Frame_WotLK_Dung_Only"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_Frame_WotLK_Dung_Only"] == false then
-			RaidRoll_DBPC[UnitName("player")]["RR_Frame_WotLK_Dung_Only"] = false
-			RR_Frame_WotLK_Dung_Only:SetChecked(false)
-		else
-			RR_Frame_WotLK_Dung_Only:SetChecked(true)
-		end
-		
-		
--- RR_AutoOpenLootWindow
-		if RaidRoll_DBPC[UnitName("player")]["RR_AutoOpenLootWindow"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_AutoOpenLootWindow"] == true then
-			RaidRoll_DBPC[UnitName("player")]["RR_AutoOpenLootWindow"] =  true
-			RR_AutoOpenLootWindow:SetChecked(true)
-		else
-			RR_AutoOpenLootWindow:SetChecked(false)
-		end
 	end
 	
 	-- Show Class Colors
 	if RaidRoll_DBPC[UnitName("player")]["Time_Offset"] == nil then
 		RaidRoll_DBPC[UnitName("player")]["Time_Offset"] = 0
 	end
-	
-	
--- RR_RollCheckBox_Auto_Close
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Close"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Close"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Close"] =  false
-		RR_RollCheckBox_Auto_Close:SetChecked(false)
-	else
-		RR_RollCheckBox_Auto_Close:SetChecked(true)
-	end
-	
--- RR_RollCheckBox_No_countdown
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_No_countdown"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_No_countdown"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_No_countdown"] =  false
-		RR_RollCheckBox_No_countdown:SetChecked(false)
-	else
-		RR_RollCheckBox_No_countdown:SetChecked(true)
-	end	
-	
-	
--- RR_RollCheckBox_GuildAnnounce
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_GuildAnnounce"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_GuildAnnounce"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_GuildAnnounce"] =  false
-		RR_RollCheckBox_GuildAnnounce:SetChecked(false)
-	else
-		RR_RollCheckBox_GuildAnnounce:SetChecked(true)
-	end	
-	
--- RR_RollCheckBox_GuildAnnounce_Officer
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_GuildAnnounce_Officer"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_GuildAnnounce_Officer"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_GuildAnnounce_Officer"] =  false
-		RR_RollCheckBox_GuildAnnounce_Officer:SetChecked(false)
-	else
-		RR_RollCheckBox_GuildAnnounce_Officer:SetChecked(true)
-	end	
-	
--- RR_RollCheckBox_Auto_Announce
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Announce"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Announce"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Announce"] =  false
-		RR_RollCheckBox_Auto_Announce:SetChecked(false)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Auto_Announce"] =  true
-		RR_RollCheckBox_Auto_Announce:SetChecked(true)
-	end
-
--- Show Class Colors
-	if RaidRoll_DBPC[UnitName("player")]["RR_ShowClassColors"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_ShowClassColors"] == true then
-		RaidRoll_DBPC[UnitName("player")]["RR_ShowClassColors"] =  true
-		RR_RollCheckBox_ShowClassColors_panel:SetChecked(true)
-	else
-		RR_RollCheckBox_ShowClassColors_panel:SetChecked(false)
-	end
-	
--- Catch unannounced rolls
-	if RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] = false	--Set true if unannounced rolls are tracked
-		RaidRoll_Catch_All:SetChecked(false)
-		RR_RollCheckBox_Unannounced_panel:SetChecked(false)
-	else
-		RaidRoll_Catch_All:SetChecked(true)
-		RR_RollCheckBox_Unannounced_panel:SetChecked(true)
-	end
-	
--- Allow all rolls (e.g. 1-50)
-	if RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] = false	--Set true if all rolls are counted (False = only 1-100 rolls are counted)
-		RaidRoll_Allow_All:SetChecked(false)
-		RR_RollCheckBox_AllRolls_panel:SetChecked(false)
-	else
-		RaidRoll_Allow_All:SetChecked(true)
-		RR_RollCheckBox_AllRolls_panel:SetChecked(true)
-	end
-
--- Allow Extra Rolls
-	if RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] = false	--
-		RR_RollCheckBox_ExtraRolls:SetChecked(false)
-		RR_RollCheckBox_ExtraRolls_panel:SetChecked(false)
-	else
-		RR_RollCheckBox_ExtraRolls:SetChecked(true)
-		RR_RollCheckBox_ExtraRolls_panel:SetChecked(true)
-	end
-	
--- Show Rank beside names
-	if RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_Show_Ranks"] = false	--
-		--RR_RollCheckBox_ShowRanks:SetChecked(false)
-		RR_RollCheckBox_ShowRanks_panel:SetChecked(false)
-	else
-		--RR_RollCheckBox_ShowRanks:SetChecked(true)
-		RR_RollCheckBox_ShowRanks_panel:SetChecked(true)
-	end
-	
-	
-	
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Multi_Rollers"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Multi_Rollers"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Multi_Rollers"] = false
-		RR_RollCheckBox_Multi_Rollers:SetChecked(false)
-	else
-		RR_RollCheckBox_Multi_Rollers:SetChecked(true)
-	end
-	
--- !bid
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Track_EPGPSays"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Track_EPGPSays"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Track_EPGPSays"] = false
-		RR_RollCheckBox_Track_EPGPSays:SetChecked(false)
-	else
-		RR_RollCheckBox_Track_EPGPSays:SetChecked(true)
-	end
-	
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Num_Not_Req"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Num_Not_Req"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Num_Not_Req"] = false
-		RR_RollCheckBox_Num_Not_Req:SetChecked(false)
-	else
-		RR_RollCheckBox_Num_Not_Req:SetChecked(true)
-	end
-	
-	
-	
--- !epgp
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Track_Bids"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Track_Bids"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Track_Bids"] = false
-		RR_RollCheckBox_Track_Bids:SetChecked(false)
-	else
-		RR_RollCheckBox_Track_Bids:SetChecked(true)
-	end
-	
-	
--- Give higher ranks higher priority
-	if RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RankPriority"] = false	--
-		--RR_RollCheckBox_RankPrio:SetChecked(false)
-		RR_RollCheckBox_RankPrio_panel:SetChecked(false)
-	else
-		--RR_RollCheckBox_RankPrio:SetChecked(true)
-		RR_RollCheckBox_RankPrio_panel:SetChecked(true)
-	end
-	
-	if RaidRoll_DBPC[UnitName("player")]["RR_ShowGroupNumber"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_ShowGroupNumber"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_ShowGroupNumber"] = false
-		RR_RollCheckBox_ShowGroupNumber_panel:SetChecked(false)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_ShowGroupNumber"] = true
-		RR_RollCheckBox_ShowGroupNumber_panel:SetChecked(true)
-	end
-	
-	if RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Enabled"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Enabled"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Enabled"] = false
-		RR_RollCheckBox_EPGPMode_panel:SetChecked(false)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Enabled"] = true
-		RR_RollCheckBox_EPGPMode_panel:SetChecked(true)
-	end
-	
-	if RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Priority"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Priority"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Priority"] = false
-		RR_RollCheckBox_EPGPThreshold_panel:SetChecked(false)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_EPGP_Priority"] = true
-		RR_RollCheckBox_EPGPThreshold_panel:SetChecked(true)
-	end
-	
-	if RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Enable_Alt_Mode"] == nil or RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Enable_Alt_Mode"] == false then
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Enable_Alt_Mode"] = false
-		RR_RollCheckBox_Enable_Alt_Mode:SetChecked(false)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_RollCheckBox_Enable_Alt_Mode"] = true
-		RR_RollCheckBox_Enable_Alt_Mode:SetChecked(true)
-	end
-
-	
-	
-
 
 	RR_Next:Disable()
 	RR_Last:Disable()
 	
--- This controls the showing of the window (true = show window, false = dont show window)
+	-- This controls the showing of the window (true = show window, false = dont show window)
 	if RaidRoll_DBPC[UnitName("player")]["RR_Roll_Tracking_Enabled"] == nil then
 		RaidRoll_DBPC[UnitName("player")]["RR_Roll_Tracking_Enabled"] = true
 	end
@@ -2930,21 +2618,12 @@ function RR_SetupVariables()
 		RR_Test("Raid Roll: Raid Roll Tracking disabled. Type ''/rr enable'' to enable tracking")
 	end
 	
--- sets up the name frame
-	--RR_SetupNameFrame()
-	
-	
-
-	
 	RR_RollFrame:SetHeight(155)
 	RR_RollWindowSizeUpdated()
 	RaidRoll_CheckButton_Update()
-	RaidRoll_CheckButton_Update_Panel()
+	RaidRoll:UpdateDisplay()
+
 end
-
-
-	-- /run RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"]=300
-	-- /run RaidRoll_CheckButton_Update()
 
 function RR_GetClassColor(Class)
 

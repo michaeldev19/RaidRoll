@@ -49,7 +49,7 @@ function RR_OptionsScreenToggle()
 	if InterfaceOptionsFrame:IsShown() then
 		InterfaceOptionsFrame:Hide()
 	else
-		InterfaceOptionsFrame_OpenToCategory(RaidRoll_Panel.panel);
+		InterfaceOptionsFrame_OpenToCategory("Raid Roll")
 		RR_GuildRankUpdate()
 	end
 end
