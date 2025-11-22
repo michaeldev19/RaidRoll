@@ -4,6 +4,8 @@ RaidRoll is an improved World of Warcraft addon designed to facilitate raid loot
 
 ## Features
 
+This add-on integrates essential options for tracking dungeon boss loot, as well as tracking player dice rolls, such as:
+
 - **Fast Loot Tracking:** Track and announce loot drops with clear messages.
 - **Simple Dice Roll Window:** Instantly access a dedicated roll window for all loot events.
 - **Multi-Profile Support:** Settings are profile-aware, letting you manage configurations for different characters.
@@ -24,17 +26,26 @@ RaidRoll is an improved World of Warcraft addon designed to facilitate raid loot
 
 ## Usage
 
-Install RaidRoll in your `Interface/AddOns` directory and reload your UI.  
-Access configuration via the Interface Options menu or using the slash commands above.
+To start using RaidRoll, follow these simple steps:
+
+1.  Download the addon files.
+2.  Place the `RaidRoll` folder directly into your World of Warcraft `Interface/AddOns/` directory.
+3.  Restart the WoW client or use the command `/reload` in-game to load the interface.
 
 ## Compatibility
-- **Base Addon Version:** 4.4.15
-- **World of Warcraft Supported Versions:** Wrath of the Lich King and Cataclysm
+
+| Attribute | Details |
+| :--- | :--- |
+| **Addon Base Version** | 4.4.15 |
+| **Supported WoW Version** | **Wrath of the Lich King (3.3.5a) and Cataclysm** |
+| **Interface Version** | **30300** |
 
 ## Credits
+
 The original version and foundation of this addon were created by: Musou - Original Author
 
 ## Contributions
+
 Issues and suggestions are welcome! Feel free to open an issue or submit a pull request.
 
 ---
