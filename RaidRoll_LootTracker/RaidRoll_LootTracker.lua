@@ -904,7 +904,6 @@ function RR_Loot_Display_Refresh()
 				--_G["RR_Loot_Won_String"..i]:SetText("Won Item: " .. Winner)
 				--_G["RR_Loot_Received_String"..i]:SetText("Received: " .. Received)
 				
-				
 				if GetNumRaidMembers() ~= 0 then -- we are in a raid
 					if IsRaidLeader() == nil and IsRaidOfficer() == nil then
 						_G["RR_Loot_Announce_1_Button_"..i]:Hide()
@@ -924,7 +923,11 @@ function RR_Loot_Display_Refresh()
 				else
 					_G["RR_Loot_Announce_1_Button_"..i]:Show()
 					_G["RR_Loot_Announce_2_Button_"..i]:Show()
-					if RaidRoll.db.profile.RR_Enable3Messages == true then _G["RR_Loot_Announce_3_Button_"..i]:Show() end
+					if RaidRoll.db.profile.RR_Enable3Messages == true then
+						_G["RR_Loot_Announce_3_Button_"..i]:Show()
+					else
+						_G["RR_Loot_Announce_3_Button_"..i]:Hide()
+					end
 					_G["RR_Loot_RaidRollButton_"..i]:Show()
 				end
 				

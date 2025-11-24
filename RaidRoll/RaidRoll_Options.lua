@@ -474,21 +474,21 @@ function RaidRoll:UpdateDisplay()
             rankString:SetWidth(65 + extraWidth) 
         end
     end
-
+    
     if RaidRoll_LootTrackerLoaded == true then
         if self.db.profile.RR_Enable3Messages == true then
             for i = 1,4 do
 				_G["RR_Loot_Announce_1_Button_"..i]:SetWidth(33)
 				_G["RR_Loot_Announce_2_Button_"..i]:SetWidth(33)
 				_G["RR_Loot_Announce_3_Button_"..i]:Show()
-				RR_Loot_Display_Refresh()
+                RR_Loot_Display_Refresh()
 			end
         else
-            for i=1,4 do
+            for i = 1,4 do
 				_G["RR_Loot_Announce_1_Button_"..i]:SetWidth(50)
 				_G["RR_Loot_Announce_2_Button_"..i]:SetWidth(50)
 				_G["RR_Loot_Announce_3_Button_"..i]:Hide()
-				RR_Loot_Display_Refresh()
+                RR_Loot_Display_Refresh()
 			end
         end
     end
@@ -498,7 +498,7 @@ function RaidRoll:UpdateDisplay()
     if RR_HasDisplayedAlready ~= nil then
         RR_Display(rr_CurrentRollID)
     end
-
+    
 end
 
 -- Build priority configuration options
