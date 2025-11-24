@@ -1,4 +1,3 @@
--- 1. Obtener las bibliotecas necesarias
 local AceConfig = LibStub("AceConfig-3.0")
 local AceConfigRegistry = LibStub("AceConfigRegistry-3.0")
 local AceConfigDialog = LibStub("AceConfigDialog-3.0")
@@ -55,6 +54,7 @@ local defaults = {
     },
 }
 
+-- Initialization of configuration options
 function RaidRoll:OnInitialize()
 
     self.globalDB = LibStub("AceDB-3.0"):New("RaidRoll_DB", defaults_global)
@@ -386,6 +386,7 @@ function RaidRoll:OnInitialize()
 
 end
 
+-- Update the different interface components
 function RaidRoll:UpdateDisplay()
 
     -- Initialize variables
@@ -500,6 +501,7 @@ function RaidRoll:UpdateDisplay()
 
 end
 
+-- Build priority configuration options
 function RaidRoll:BuildPriorityOptions()
     local rankLabels = {}
     if IsInGuild() then
@@ -564,6 +566,7 @@ function RaidRoll:BuildPriorityOptions()
     LibStub("AceConfigRegistry-3.0"):RegisterOptionsTable("Priority", options_priority)
 end
 
+-- Build loot configuration options
 function RaidRoll:BuildLootOptions()
     local options_loot = {
         name = "Raid Roll",

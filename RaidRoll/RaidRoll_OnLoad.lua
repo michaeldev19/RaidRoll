@@ -873,13 +873,13 @@ local High = tonumber(High)
 				
 				rr_playername[rr_rollID][rr_PlayersRolled[rr_rollID]] = Name	
 				
-				rr_RollSort(rr_rollID,Roll,Name,true,true,RR_LegitRoll,LowHigh)
+				rr_RollSort(rr_rollID, Roll, Name, true, true, RR_LegitRoll, LowHigh)
 				
 			else
 				
-				rr_RollSort(rr_rollID,Roll,Name,true,false,RR_LegitRoll,LowHigh)
+				rr_RollSort(rr_rollID, Roll, Name, true, false, RR_LegitRoll, LowHigh)
 				
-				if RR_RollCheckBox_Multi_Rollers:GetChecked() then
+				if RaidRoll.db.profile.RR_RollCheckBox_Multi_Rollers == true then
 					if GetNumRaidMembers() ~= 0 then
 						SendChatMessage(RAIDROLL_LOCALE["Multiroll_by"] .. Name, "RAID")
 					elseif GetNumPartyMembers() > 0 then
@@ -887,15 +887,13 @@ local High = tonumber(High)
 					else
 						SendChatMessage(RAIDROLL_LOCALE["Multiroll_by"] .. Name, "SAY")
 					end
-				end 
-				
+				end
 				
 			end
 		end
-	end		
-
+	end
 	
--- Raid Roll Catcher
+	-- Raid Roll Catcher
 	if RR_Has_Rolled == true then
 	--Check if the player rolling is the user
 		if Name == UnitName("player") then
@@ -913,7 +911,7 @@ local High = tonumber(High)
 		end
 	end
 	
--- update scrollbar
+	-- update scrollbar
 	if MaxPlayers[rr_CurrentRollID] and MaxPlayers[rr_CurrentRollID] >= 5 then
 		RaidRoll_MaxNumber = MaxPlayers[rr_CurrentRollID]-4
 		RaidRoll_MaxNumber_Slider = RaidRoll_MaxNumber
@@ -923,13 +921,8 @@ local High = tonumber(High)
 	
 end
 
-
-
-
-
-
 function RR_FindRollNumbers(msg)
-local Roll,Low,High
+	local Roll,Low,High
 
 	Low = tonumber(string.sub(msg,Start+1,Mid-1))
 	High =  tonumber(string.sub(msg,Mid+1,End-1))
@@ -951,34 +944,32 @@ local Roll,Low,High
 	
 	Roll =  tonumber(string.sub(msg,Start-digits,Start-1))
 
-return Roll,Low,High
+	return Roll,Low,High
 end
 
 -- RR_FindName("abcdefgh95(1-100)")
-
 function RR_FindName(msg)
-
-local Name
-
-	if GetLocale() ~= "zhTW" then
-		Name = strsplit(" ",msg, 2)
-	else
-		Start = string.find(msg, "擲出")
-		--Start = string.find(msg, "%srolls")
-		Name = string.sub(msg,0,Start-1)
+	local Name
 		
-		if RaidRoll_DB["debug"] == true then RR_Test("Message 1 - " .. Name) end
-	end
-	
-	--zhCN code
-	if GetLocale() == "zhCN" then
-		Start = string.find(msg, "掷出")
-		--Start = string.find(msg, "%srolls")
-		Name = string.sub(msg,0,Start-1)
-		if RaidRoll_DB["debug"] == true then RR_Test("Message 1 - " .. Name) end
-	end
-	
-return Name
+		if GetLocale() ~= "zhTW" then
+			Name = strsplit(" ",msg, 2)
+		else
+			Start = string.find(msg, "擲出")
+			--Start = string.find(msg, "%srolls")
+			Name = string.sub(msg,0,Start-1)
+			
+			if RaidRoll_DB["debug"] == true then RR_Test("Message 1 - " .. Name) end
+		end
+		
+		--zhCN code
+		if GetLocale() == "zhCN" then
+			Start = string.find(msg, "掷出")
+			--Start = string.find(msg, "%srolls")
+			Name = string.sub(msg,0,Start-1)
+			if RaidRoll_DB["debug"] == true then RR_Test("Message 1 - " .. Name) end
+		end
+		
+	return Name
 end
 
 function RR_RollHandler(msg)
@@ -1870,12 +1861,12 @@ end
 
 
 function RR_Command(cmd)
---Stuff that happens when you press /mm <command>
+	--Stuff that happens when you press /mm <command>
 
-RR_ItemLink = nil --clearing the variable
+	RR_ItemLink = nil --clearing the variable
 
-cmd_n = tonumber(cmd)
-cmd_s = string.lower(cmd)
+	cmd_n = tonumber(cmd)
+	cmd_s = string.lower(cmd)
 
 	if cmd_s == "options" 
 	or cmd_s == "option" 
@@ -2009,24 +2000,21 @@ cmd_s = string.lower(cmd)
 	end
 	
 	if cmd_s == "epgp" then
-		if RR_RollCheckBox_EPGPMode_panel:GetChecked() then
-			RR_RollCheckBox_EPGPMode_panel:SetChecked(false)
-			RR_Test("EPGP Mode - |cFFC41F3BDISABLED")
+		if RaidRoll.db.profile.Enable_EPGP_mode == true then
+			RaidRoll.db.profile.Enable_EPGP_mode = false
 		else
-			RR_RollCheckBox_EPGPMode_panel:SetChecked(true)
-			RR_Test("EPGP Mode - |cFFABD473ENABLED")
+			RaidRoll.db.profile.Enable_EPGP_mode = true
 		end
 		RaidRoll:UpdateDisplay()
 		RR_Display(rr_CurrentRollID)
 	end
 
--- reset the position of the rolling frame
+	-- reset the position of the rolling frame
 	if cmd_s == "reset" or cmd_s == "resetpos" then
 		_G["RR_RollFrame"]:ClearAllPoints(); 
 		_G["RR_RollFrame"]:SetPoint("CENTER", UIParent, "CENTER", 0, 0)
 		RR_Display(rr_CurrentRollID)
 	end
-
 
 	if cmd_s == "show" then
 		RR_RollFrame:Show()
@@ -2044,9 +2032,8 @@ cmd_s = string.lower(cmd)
 	end
 	
 	if cmd_s == "test" then
-		 RR_Test("Kilerpet's Raid Roll Addon - Loaded")
+		RR_Test("Kilerpet's Raid Roll Addon - Loaded")
 	end	
-	
 	
 	if cmd_s == "unan" or cmd_s == "unannounced" then
 		if RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] == true then
@@ -2060,7 +2047,7 @@ cmd_s = string.lower(cmd)
 		end
 	end	
 
--- This controls the showing of the window (true = show window, false = dont show window)
+	-- This controls the showing of the window (true = show window, false = dont show window)
 	if cmd_s == "enable" then
 		RaidRoll_DBPC[UnitName("player")]["RR_Roll_Tracking_Enabled"] = true
 		RR_Test("Raid Roll: Raid Roll Tracking enabled. Type ''/rr disable'' to disable tracking")
@@ -2069,8 +2056,7 @@ cmd_s = string.lower(cmd)
 	if cmd_s == "disable" then
 		RaidRoll_DBPC[UnitName("player")]["RR_Roll_Tracking_Enabled"] = false
 		RR_Test("Raid Roll: Raid Roll Tracking disabled. Type ''/rr enable'' to enable tracking")
-	end	
-	
+	end
 	
 	if cmd_s == "all" then
 		if RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] == true then
@@ -2083,12 +2069,6 @@ cmd_s = string.lower(cmd)
 			RaidRoll_Allow_All:SetChecked(true);
 		end
 	end
-	
-	
-	
-	
-	
-	
 	
 	local cmd1, cmd2, cmd3 = strsplit(" ", cmd_s, 3)
 	
@@ -2127,10 +2107,7 @@ cmd_s = string.lower(cmd)
 					RaidRoll_DBPC[UnitName("player")]["RR_PlayerIcon"][name] = RR_ListOfIcons[RaidRoll_DBPC[UnitName("player")]["RR_PlayerIconID"][name]]
 				end
 			end
-			
-			
 		end
-		
 	end
 	
 	if cmd1 == "unmark" then
@@ -2156,18 +2133,11 @@ cmd_s = string.lower(cmd)
 		RR_Display(rr_CurrentRollID)
 	end	
 	
-	
-	
-	
-	
-	
-	
-	
 	-- GetNumRaidMembers() == 0 then alone / in party
 	
-if RaidRoll_DB["debug"] == true then if cmd == "" then RR_Test("Standard Raid Roll Detected") end end
+	if RaidRoll_DB["debug"] == true then if cmd == "" then RR_Test("Standard Raid Roll Detected") end end
 
---Do a standard Raid roll
+	--Do a standard Raid roll
 	if cmd == "" then 
 		if GetNumRaidMembers() ~= 0 then 
 			if RaidRoll_DB["debug"] == true then  RR_Test("Raid Group detected. Doing a raid roll") end
@@ -2178,29 +2148,27 @@ if RaidRoll_DB["debug"] == true then if cmd == "" then RR_Test("Standard Raid Ro
 		end
 	end
 	
-	
-	
-
---Find the start and end location of the item link
+	--Find the start and end location of the item link
 	RR_Start_Loc,_ = string.find(cmd, "item:");
 	_,RR_End_Loc = string.find(cmd, "|h|r")
 	
---Cut the itemlink out of the string
+	--Cut the itemlink out of the string
 	if RR_Start_Loc ~= nil and RR_End_Loc ~= nil then
 		RR_ItemLink = strsub(cmd,RR_Start_Loc-12,RR_End_Loc)
 	end
---For debugging, show the itemlink
+
+	--For debugging, show the itemlink
 	if RaidRoll_DB["debug"] == true then RR_Test(RR_ItemLink) end
 	
---Cut up the command to see if it was a reroll or not
+	--Cut up the command to see if it was a reroll or not
 	RR_Reroll = strsub(cmd_s,1,3)
 	RR_Reroll_Long = strsub(cmd_s,1,6)
 	
---for debugging, show the results of the split up string
+	--for debugging, show the results of the split up string
 	if RaidRoll_DB["debug"] == true then RR_Test(RR_Reroll) end
 	if RaidRoll_DB["debug"] == true then RR_Test(RR_Reroll_Long) end
 	
---Do a  repeat Raid roll
+	--Do a  repeat Raid roll
 	if RR_Reroll == "re " or RR_Reroll_Long == "reroll" or cmd1 == "re" then
 		if RR_ItemLink ~= nil then 
 			if GetNumRaidMembers() ~= 0 then 
@@ -2232,10 +2200,7 @@ if RaidRoll_DB["debug"] == true then if cmd == "" then RR_Test("Standard Raid Ro
 		end
 	end
 	
-	
 end
-
-
 
 function RR_Ignore(ID)
 	Name = string.lower(RollerName[rr_CurrentRollID][tonumber(ID)])
@@ -2501,7 +2466,6 @@ function RR_NewRoll()
 end
 
 function RR_NextRoll()
-
 	RR_ScrollOffset = 0
 	
 	if rr_CurrentRollID < rr_rollID then
@@ -2522,31 +2486,6 @@ function RR_NextRoll()
 end
 
 function RaidRoll_CheckButton_Update()
-
-	if RaidRoll_Catch_All:GetChecked()  then
-		RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] =  true
-		RaidRoll_Catch_All:SetChecked(true)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_Track_Unannounced_Rolls"] =  false
-		RaidRoll_Catch_All:SetChecked(false)
-	end
-
-	if RaidRoll_Allow_All:GetChecked()  then
-		RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] =  true
-		RaidRoll_Allow_All:SetChecked(true)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_Accept_All_Rolls"] =  false
-		RaidRoll_Allow_All:SetChecked(false)
-	end
-	
-	if RR_RollCheckBox_ExtraRolls:GetChecked()  then
-		RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] =  true
-		RR_RollCheckBox_ExtraRolls:SetChecked(true)
-	else
-		RaidRoll_DBPC[UnitName("player")]["RR_AllowExtraRolls"] =  false
-		RR_RollCheckBox_ExtraRolls:SetChecked(false)
-	end
-
 	rr_RollSort(rr_CurrentRollID)
 	
 	if RR_HasDisplayedAlready ~= nil then
@@ -2560,14 +2499,10 @@ function RaidRoll_CheckButton_Update()
 	RaidRoll:UpdateDisplay()
 end
 
-
 function Set_RaidRoll_ExtraWidth(width)
-
- RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] = width
- RaidRoll_CheckButton_Update()
-
+	RaidRoll_DBPC[UnitName("player")]["RR_ExtraWidth"] = width
+	RaidRoll_CheckButton_Update()
 end
-
 
 function RR_SetupVariables()
 
